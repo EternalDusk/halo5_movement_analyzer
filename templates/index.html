@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div id="speedPlot"></div>
+  <div id="polarPlot"></div>
+
+  <script>
+    async function fetchData() {
+      const res = await fetch('/data');
+      return await res.json();
+    }
+
+    async function update() {
+      const data = await fetchData();
+
+      const speeds = data.map(d => d[0]);
+      const angles = data.map(d => d[3]);
+
+      Plotly.newPlot('speedPlot', [{
+        y: speeds,
+        type: 'scatter',
+        name: 'Speed'
+      }], { title: 'Speed Over Time' });
+
+      Plotly.newPlot('polarPlot', [{
+        type: 'scatterpolar',
+        r: speeds,
+        theta: angles,
+        mode: 'lines',
+        name: 'Movement Direction'
+      }], {
+        polar: { radialaxis: { visible: true, range: [0, Math.max(...speeds, 1)] }},
+        title: 'Movement Vector (Polar)'
+      });
+
+      setTimeout(update, 100);
+    }
+
+    update();
+  </script>
+</body>
+</html>
