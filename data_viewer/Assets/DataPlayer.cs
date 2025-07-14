@@ -7,82 +7,157 @@ using UnityEngine.UI;
 
 public class DataPlayer : MonoBehaviour
 {
-    public TextAsset jsonlFile;
+    public string filename;
+    public string jsonlFilePath;
+    public Slider scrubSlider;
 
     public GameObject playerCapsule;
     public RawImage displayImage;
     public Text controllerText;
+    public Text frameText;
 
-    private List<FrameData> frames = new List<FrameData>();
-    public int currentFrame = 0;
+    private List<long> frameOffset = new List<long>();
+    private FileStream fileStream;
+    private StreamReader reader;
+
     public float timer = 0f;
     public float frameRate = 120f;
+    public int currentFrame = 0;
+
+    public int totalFrames;
+    private bool isScrubbing = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        frames.Clear();
+        jsonlFilePath = Path.Combine(Application.streamingAssetsPath, filename);
+        fileStream = new FileStream(jsonlFilePath, FileMode.Open, FileAccess.Read);
+        
+        Debug.Log("Indexing file...");
+        IndexFile();
 
-        var lines = jsonlFile.text.Split('\n');
-        foreach (var line in lines)
-        {
-            if (string.IsNullOrWhiteSpace(line)) continue;
-            var json = JObject.Parse(line);
-            var mem = json["memory"];
-            var inputs = json["inputs"];
-            var imgB64 = (string)json["image"];
-
-            FrameData frame = new FrameData();
-            frame.pos = new Vector3(
-                (float)mem["x"],
-                (float)mem["y"],
-                (float)mem["z"]);
-            
-            float pitch = (float)mem["pitch"] * 90f;
-            float yaw = (float)mem["yaw"] * Mathf.Rad2Deg;
-            frame.rot = Quaternion.Euler(pitch, yaw, 0);
-
-            frame.controllerInput = inputs.ToString();
-
-            // Decode base64 to texture
-            byte[] imgBytes = System.Convert.FromBase64String(imgB64);
-            Texture2D tex = new Texture2D(2, 2);
-            tex.LoadImage(imgBytes);
-            frame.image = tex;
-
-            frames.Add(frame);
-        }
+        totalFrames = frameOffset.Count;
+        scrubSlider.maxValue = totalFrames - 1;
+        scrubSlider.onValueChanged.AddListener(OnScrub);
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        if (frames.Count == 0) return;
+        if (isScrubbing) return;
 
+        timer += Time.deltaTime;
         if (timer >= 1f / frameRate)
         {
             timer = 0f;
-            ShowFrame(frames[currentFrame]);
-            currentFrame = (currentFrame + 1) % frames.Count;
-        } else {
-            timer += Time.deltaTime; 
+            LoadFrame(currentFrame);
+            currentFrame = (currentFrame + 1) % totalFrames;
+            scrubSlider.value = currentFrame;
         }
     }
 
-    void ShowFrame(FrameData frame)
+    private void IndexFile()
     {
-        playerCapsule.transform.position = frame.pos;
-        playerCapsule.transform.rotation = frame.rot;
+        frameOffset.Clear();
+        fileStream.Seek(0, SeekOrigin.Begin);
 
-        displayImage.texture = frame.image;
-        controllerText.text = frame.controllerInput;
+        using (var binReader = new BinaryReader(fileStream, System.Text.Encoding.UTF8, leaveOpen: true))
+        {
+            long pos = 0;
+            while (fileStream.Position < fileStream.Length)
+            {
+                frameOffset.Add(pos);
+                string line = ReadLine(binReader);
+                pos = fileStream.Position;
+            }
+        }
+
+        fileStream.Seek(0, SeekOrigin.Begin);
+        reader = new StreamReader(fileStream, System.Text.Encoding.UTF8, false, 1024, leaveOpen: true);
+    }
+
+    private string ReadLine(BinaryReader reader)
+    {
+        var line = new List<byte>();
+        while (true)
+        {
+            if (reader.BaseStream.Position >= reader.BaseStream.Length)
+                break;
+            
+            byte b = reader.ReadByte();
+            if (b == '\n') break;
+            line.Add(b);
+        }
+        return System.Text.Encoding.UTF8.GetString(line.ToArray()).TrimEnd('\r');
+    }
+
+    void OnScrub(float val)
+    {
+        isScrubbing = true;
+        currentFrame = Mathf.FloorToInt(val);
+        LoadFrame(currentFrame);
+        isScrubbing = false;
+    }
+
+    void LoadFrame(int frameIndex)
+    {
+        if (frameIndex < 0 || frameIndex >= totalFrames) return;
+
+        reader.DiscardBufferedData(); // reset internal buffer
+        fileStream.Seek(frameOffset[frameIndex], SeekOrigin.Begin);
+        string line = reader.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(line)) return;
+
+        JObject json;
+        try
+        {
+            json = JObject.Parse(line);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Exception caught: {e.GetType().Name} - {e.Message}\n{e.StackTrace}");
+            return;
+        }
+
+        var mem = json["memory"];
+        var inputs = json["inputs"];
+        var imgB64 = (string)json["image"];
+
+        Vector3 pos = new Vector3(
+            (float)mem["x"],
+            (float)mem["y"],
+            (float)mem["z"]
+        );
+
+        float pitch = (float)mem["pitch"] * -90f;
+        float yaw = (float)mem["yaw"] * -Mathf.Rad2Deg + 90f;
+
+        byte[] imgBytes = System.Convert.FromBase64String(imgB64);
+        Texture2D tex = new Texture2D(2, 2);
+        tex.LoadImage(imgBytes);
+
+        playerCapsule.transform.position = pos;
+        playerCapsule.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+        displayImage.texture = tex;
+        controllerText.text = inputs.ToString();
+        frameText.text = mem.ToString();
+    }
+
+    void OnDestroy()
+    {
+        reader?.Close();
+        fileStream?.Close();
     }
 
     class FrameData
     {
         public Vector3 pos;
-        public Quaternion rot;
+        public float yaw;
+        public float pitch;
         public Texture2D image;
         public string controllerInput;
+        public string memText;
     }
 }

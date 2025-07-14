@@ -74,7 +74,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 2263
+  controlID: 50
   draggingID: 0
 --- !u!114 &4
 MonoBehaviour:
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 2262
+  controlID: 49
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 96
+  controlID: 48
   draggingID: 0
 --- !u!114 &11
 MonoBehaviour:
@@ -297,8 +297,8 @@ MonoBehaviour:
     y: 448
     width: 1103
     height: 539
-  m_MinSize: {x: 201, y: 221}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
@@ -765,9 +765,9 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: 48, y: 10}
+      snapOffset: {x: -244, y: 10}
       snapOffsetDelta: {x: 0, y: 0}
-      snapCorner: 0
+      snapCorner: 1
       id: UnityEditor.SceneViewCameraOverlay
       index: 8
       layout: 4
@@ -784,9 +784,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 248.41881, y: 273.6366, z: -11.488892}
+    m_Target: {x: 11.4835615, y: 8.251727, z: 10.768855}
     speed: 2
-    m_Value: {x: 248.41881, y: 273.6366, z: -11.488892}
+    m_Value: {x: 11.4835615, y: 8.251727, z: 10.768855}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -832,13 +832,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.25012115, y: 0.19643249, z: -0.05190209, w: -0.9466664}
+    m_Target: {x: 0.09444395, y: -0.9026504, z: 0.25595167, w: 0.3329892}
     speed: 2
-    m_Value: {x: -0.25011897, y: 0.19643077, z: -0.05190164, w: -0.9466582}
+    m_Value: {x: 0.09405565, y: -0.903108, z: 0.25608146, w: 0.33161983}
   m_Size:
-    m_Target: 204.75241
+    m_Target: 0.8794153
     speed: 2
-    m_Value: 204.75241
+    m_Value: 0.8794153
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -934,20 +934,20 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 0a5f0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 2adcffff64e3ffff1afbffff
+      m_ExpandedIDs: 668fffff76f3ffff345b0000645b0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: Text (Legacy)
-        m_OriginalName: Text (Legacy)
+        m_Name: Text (Legacy) (1)
+        m_OriginalName: Text (Legacy) (1)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: -8330
+        m_UserData: -44648
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
         m_OriginalEventType: 0
@@ -1005,7 +1005,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Resources
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1014,14 +1014,14 @@ MonoBehaviour:
   m_StartGridSize: 64
   m_LastFolders: []
   m_LastFoldersGridSize: -1
-  m_LastProjectPath: E:\data_viewer
+  m_LastProjectPath: C:\Users\Dusk\Documents\GitHub\halo5_movement_analyzer\data_viewer
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 0a070000
     m_LastClickedID: 1802
-    m_ExpandedIDs: 
+    m_ExpandedIDs: 00000000a85b0000aa5b0000ac5b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1049,7 +1049,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff00000000ca590000b45f0000ec630000
+    m_ExpandedIDs: ffffffff00000000a85b0000aa5b0000ac5b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

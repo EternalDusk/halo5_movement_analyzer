@@ -12,6 +12,11 @@ import win32api
 from inputs import get_gamepad
 import json
 import threading
+from rich.console import Console
+from rich.table import Table
+from rich.columns import Columns
+from rich.live import Live
+from rich.panel import Panel
 
 # MEMORY INFO
 pm = pymem.Pymem('halo5forge.exe')
@@ -89,18 +94,37 @@ def grab_screen(region):
         #img = Image.open(BytesIO(decoded_bytes))
 
 def capture(region):
+    console = Console()
     start = time.time()
-    # Dump via newline-delimited json (jsonl) format for less memory usage
-    with open("data.jsonl", "a") as f:
-        while time.time() - start < 25:
+
+    with open("data.jsonl", "a") as f, Live(console=console, refresh_per_second=60) as live:
+        while True:
+            memory = grab_memory()
+            inputs = get_controller_state()
+            image_b64 = grab_screen(region)
+
+            mem_table = Table(title="Memory")
+            mem_table.add_column("Key")
+            mem_table.add_column("Value", justify="right")
+            for k, v in memory.items():
+                mem_table.add_row(k, f"{v:.3f}")
+
+            input_table = Table(title="Controller")
+            input_table.add_column("Input")
+            input_table.add_column("State", justify="right")
+            for k, v in inputs.items():
+                input_table.add_row(k, str(v))
+
+            live.update(Columns([Panel(mem_table), Panel(input_table)]))
+
             frame = {
                 "timestamp": time.time(),
-                "inputs": get_controller_state(),
-                "memory": grab_memory(),
-                "image": grab_screen(region)
+                "inputs": inputs,
+                "memory": memory,
+                "image": image_b64
             }
             f.write(json.dumps(frame) + "\n")
-            time.sleep(1/120) # 120hz polling
+            time.sleep(1/120)
 
 def main():
     print("Starting in 5 seconds...")

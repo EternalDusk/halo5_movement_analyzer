@@ -1,0 +1,15 @@
+**/*.jsonl
+**/StreamingAssets
+build
+dist
+venv
+
+**/.utmp/
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+**/*.log
